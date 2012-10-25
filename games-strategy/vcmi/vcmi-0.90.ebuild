@@ -7,7 +7,7 @@ EAPI=4
 inherit eutils autotools games
 
 MY_P="${P/-/_}"
-DESCRIPTION="Heroes of Might and Magic game engine rewrite"
+DESCRIPTION="Heroes of Might and Magic III game engine rewrite"
 HOMEPAGE="http://forum.vcmi.eu/index.php"
 SRC_URI="http://download.vcmi.eu/${MY_P}.tar.gz" 
 
