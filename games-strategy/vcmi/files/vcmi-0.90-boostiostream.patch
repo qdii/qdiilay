@@ -1,0 +1,38 @@
+From: qdii <qdii@reblochon.be>
+Bug reference can be found here: http://forum.vcmi.eu/viewtopic.php?t=569
+
+Although boost iostream m4 file was removed from trunk, references to it could be found in different Makefile, causing the compilation to fail.
+
+--- client/Makefile.am.orig	2012-10-22 21:54:06.694059596 -0400
++++ client/Makefile.am	2012-10-22 21:54:51.592060798 -0400
+@@ -16,7 +16,7 @@
+ StdInc.h.gch: StdInc.h
+ 	$(CXXCOMPILE) -c $<
+ 
+-vcmiclient_LDADD = $(top_builddir)/lib/libvcmi.la @SDL_LIBS@ @FFMPEG_LIBS@ @BOOST_PROGRAM_OPTIONS_LIB@ @BOOST_SYSTEM_LIB@ @BOOST_FILESYSTEM_LIB@ @BOOST_THREAD_LIB@ @BOOST_IOSTREAMS_LIB@ -lz
++vcmiclient_LDADD = $(top_builddir)/lib/libvcmi.la @SDL_LIBS@ @FFMPEG_LIBS@ @BOOST_PROGRAM_OPTIONS_LIB@ @BOOST_SYSTEM_LIB@ @BOOST_FILESYSTEM_LIB@ @BOOST_THREAD_LIB@ -lz
+ vcmiclient_CXXFLAGS = @SDL_CFLAGS@ @FFMPEG_CXXFLAGS@
+ vcmiclient_LDFLAGS = -L$(top_builddir)/lib
+ vcmiclient_SOURCES =  \
+--- lib/Makefile.am.orig	2012-10-22 21:53:41.154058912 -0400
++++ lib/Makefile.am	2012-10-22 21:54:22.118060009 -0400
+@@ -3,7 +3,7 @@
+ 	$(CXXCOMPILE) -DVCMI_DLL -fPIC -c $<
+ 
+ pkglib_LTLIBRARIES = libvcmi.la
+-libvcmi_la_LIBADD = @BOOST_SYSTEM_LIB@ @BOOST_FILESYSTEM_LIB@ @BOOST_THREAD_LIB@ @BOOST_IOSTREAMS_LIB@ -lz -lpthread
++libvcmi_la_LIBADD = @BOOST_SYSTEM_LIB@ @BOOST_FILESYSTEM_LIB@ @BOOST_THREAD_LIB@ -lz -lpthread
+ libvcmi_la_CXXFLAGS = @SDL_CFLAGS@ -DVCMI_DLL
+ libvcmi_la_SOURCES = \
+ 	../Global.h \
+--- Scripting/ERM/Makefile.am.orig	2012-10-22 21:53:53.299059237 -0400
++++ Scripting/ERM/Makefile.am	2012-10-22 21:54:33.713060320 -0400
+@@ -4,7 +4,7 @@
+ 	$(CXXCOMPILE) -DVCMI_DLL -fPIC -c $<
+ 
+ vcmiscripting_LTLIBRARIES = libvcmiERM.la
+-libvcmiERM_la_LIBADD = @BOOST_SYSTEM_LIB@ @BOOST_FILESYSTEM_LIB@ @BOOST_THREAD_LIB@ @BOOST_IOSTREAMS_LIB@
++libvcmiERM_la_LIBADD = @BOOST_SYSTEM_LIB@ @BOOST_FILESYSTEM_LIB@ @BOOST_THREAD_LIB@
+ libvcmiERM_la_CXXFLAGS = -DVCMI_DLL
+ libvcmiERM_la_SOURCES = \
+ 	ERMInterpreter.cpp \
