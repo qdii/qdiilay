@@ -29,6 +29,9 @@ src_prepare() {
 	printf "const wxChar * SvnRevision = wxT(\"%s\");\n" ${cur_rev} >> LiteEditor/svninfo.cpp
 	echo "" >> LiteEditor/svninfo.cpp
 	echo "Generating svninfo file..."
+
+# patch to honor CXXFLAGS, CFLAGS and LDFLAGS
+	epatch "${FILESDIR}"/${P}-honor-user-flags.patch
 }
 
 src_configure() {
