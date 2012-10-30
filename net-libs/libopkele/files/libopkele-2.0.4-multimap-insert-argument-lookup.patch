@@ -1,0 +1,14 @@
+From: qdii <qdii@reblochon.be>
+Fix argument-lookup failure on GCC 4.7.1, causing compilation to crash.
+
+--- include/opkele/discovery.h.orig	2012-10-30 10:32:08.631126543 -0400
++++ include/opkele/discovery.h	2012-10-30 10:30:45.416124321 -0400
+@@ -21,7 +21,7 @@
+ 		public:
+ 
+ 		    inline _DT& add(long priority,const _DT& d) {
+-			return insert(typename map_type::value_type(priority,d))->second;
++			return multimap<long,_DT,priority_compare>::insert(typename map_type::value_type(priority,d))->second;
+ 		    }
+ 
+ 		    bool has_value(const _DT& d) const {

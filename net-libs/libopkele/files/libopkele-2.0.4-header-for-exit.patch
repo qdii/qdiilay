@@ -1,0 +1,22 @@
+From: qdii <qdii@reblochon.be>
+Function _exit was referenced in the code, but <unistd.h> was not included, causing compilation to fail.
+
+--- test/test.cc.orig	2012-10-30 10:38:42.061137086 -0400
++++ test/test.cc	2012-10-30 10:38:21.386136537 -0400
+@@ -1,5 +1,6 @@
+ #include <iostream>
+ #include <stdexcept>
++#include <unistd.h>
+ using namespace std;
+ #include <opkele/exception.h>
+ #include <opkele/util.h>
+--- test/idiscover.cc.orig	2012-10-30 11:04:16.156178166 -0400
++++ test/idiscover.cc	2012-10-30 11:02:06.387174693 -0400
+@@ -2,6 +2,7 @@
+ #include <stdexcept>
+ #include <iterator>
+ #include <algorithm>
++#include <unistd.h>
+ using namespace std;
+ #include <opkele/exception.h>
+ #include <opkele/discovery.h>
