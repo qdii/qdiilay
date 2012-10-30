@@ -13,14 +13,15 @@ SRC_URI="http://kin.klever.net/dist/${P}.tar.bz2"
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE=""
+IUSE="doc"
 
 RDEPEND="app-text/htmltidy
 	dev-libs/libpcre
 	dev-libs/openssl
 	net-misc/curl"
 DEPEND="${RDEPEND}
-	virtual/pkgconfig"
+	virtual/pkgconfig
+	doc? ( app-doc/doxygen )"
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-header-for-exit.patch
@@ -29,5 +30,11 @@ src_prepare() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed."
-	dodoc AUTHORS NEWS
+	if use doc ; then
+		emake dox
+		dodoc -r "$S"/doxydox
+	fi
+	dodoc AUTHORS NEWS ChangeLog INSTALL README NEWS
 }
+
+
