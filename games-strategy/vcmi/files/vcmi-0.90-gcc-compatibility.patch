@@ -1,0 +1,70 @@
+From: qdii <qdii@reblochon.be>
+This patch addresses a compatibility issue with GCC 4.5: newer shared_ptr syntax was not handled properly
+Fixed by Ivan from the VCMI team. See http://forum.vcmi.eu/viewtopic.php?p=7767#7767
+
+
+
+--- lib/StartInfo.h	(revision 2995)
++++ lib/StartInfo.h	(revision 2996)
+@@ -103,6 +103,5 @@
+ 	{
+ 		mapfileChecksum = seedPostInit = seedToBeUsed = 0;
+ 		mode = INVALID;
+-		campState = nullptr;
+ 	}
+ };
+--- lib/CArtHandler.h	(revision 2995)
++++ lib/CArtHandler.h	(revision 2996)
+@@ -198,7 +198,7 @@
+ 
+ class DLL_LINKAGE CArtHandler //handles artifacts
+ {
+-	void giveArtBonus(TArtifactID aid, Bonus::BonusType type, int val, int subtype = -1, int valType = Bonus::BASE_NUMBER, shared_ptr<ILimiter> limiter = NULL, int additionalinfo = 0);
++	void giveArtBonus(TArtifactID aid, Bonus::BonusType type, int val, int subtype = -1, int valType = Bonus::BASE_NUMBER, shared_ptr<ILimiter> limiter = shared_ptr<ILimiter>(), int additionalinfo = 0);
+ 	void giveArtBonus(TArtifactID aid, Bonus::BonusType type, int val, int subtype, shared_ptr<IPropagator> propagator, int additionalinfo = 0);
+ 	void giveArtBonus(TArtifactID aid, Bonus *bonus);
+ public:
+--- lib/CArtHandler.cpp.orig	2012-11-02 21:02:06.356214152 -0400
++++ lib/CArtHandler.cpp	2012-11-02 21:03:26.622216287 -0400
+@@ -527,7 +527,7 @@
+ 	}
+ }
+ 
+-Bonus *createBonus(Bonus::BonusType type, int val, int subtype, int valType, shared_ptr<ILimiter> limiter = nullptr, int additionalInfo = 0)
++Bonus *createBonus(Bonus::BonusType type, int val, int subtype, int valType, shared_ptr<ILimiter> limiter = shared_ptr<ILimiter>(), int additionalInfo = 0)
+ {
+ 	Bonus *added = new Bonus(Bonus::PERMANENT,type,Bonus::ARTIFACT,val,-1,subtype);
+ 	added->additionalInfo = additionalInfo;
+@@ -536,7 +536,7 @@
+ 	return added;
+ }
+ 
+-Bonus *createBonus(Bonus::BonusType type, int val, int subtype, shared_ptr<IPropagator> propagator = nullptr, int additionalInfo = 0)
++Bonus *createBonus(Bonus::BonusType type, int val, int subtype, shared_ptr<IPropagator> propagator = shared_ptr<IPropagator>(), int additionalInfo = 0)
+ {
+ 	Bonus *added = new Bonus(Bonus::PERMANENT,type,Bonus::ARTIFACT,val,-1,subtype);
+ 	added->additionalInfo = additionalInfo;
+@@ -864,7 +864,7 @@
+ 		giveArtBonus(141, Bonus::SPELLCASTER, 0, Spells::FIREBALL);
+ 		giveArtBonus(141, Bonus::RANDOM_SPELLCASTER, 0);
+ 		giveArtBonus(141, Bonus::DAEMON_SUMMONING, 10, 63); //rise vampire lords
+-		giveArtBonus(141, Bonus::ENCHANTER, 0, Spells::LIGHTNING_BOLT, NULL, 2);
++		giveArtBonus(141, Bonus::ENCHANTER, 0, Spells::LIGHTNING_BOLT, std::shared_ptr<IPropagator>(), 2);
+ 		giveArtBonus(141, Bonus::REBIRTH, 1, 1);
+ 		giveArtBonus(141, Bonus::MANA_DRAIN, 10);
+ 		giveArtBonus(141, Bonus::HEALER, 25);
+@@ -876,10 +876,10 @@
+ 		giveArtBonus(142, Bonus::CATAPULT, 0);
+ 		giveArtBonus(142, Bonus::ACID_BREATH, 20);
+ 		giveArtBonus(142, Bonus::SHOTS, 200, 0, Bonus::PERCENT_TO_BASE);
+-		giveArtBonus(142, Bonus::SPELL_BEFORE_ATTACK, 50, Spells::AGE, NULL, 1);
+-		giveArtBonus(142, Bonus::SPELL_AFTER_ATTACK, 50, Spells::BERSERK, NULL, 1);
+-		giveArtBonus(142, Bonus::SPELL_AFTER_ATTACK, 50, Spells::POISON, NULL, 1);
+-		giveArtBonus(142, Bonus::SPELL_AFTER_ATTACK, 50, Spells::DISRUPTING_RAY, NULL, 1);
++		giveArtBonus(142, Bonus::SPELL_BEFORE_ATTACK, 50, Spells::AGE, std::shared_ptr<IPropagator>(), 1);
++		giveArtBonus(142, Bonus::SPELL_AFTER_ATTACK, 50, Spells::BERSERK, std::shared_ptr<IPropagator>(), 1);
++		giveArtBonus(142, Bonus::SPELL_AFTER_ATTACK, 50, Spells::POISON, std::shared_ptr<IPropagator>(), 1);
++		giveArtBonus(142, Bonus::SPELL_AFTER_ATTACK, 50, Spells::DISRUPTING_RAY, std::shared_ptr<IPropagator>(), 1);
+ 		artifacts[142].get()->setDescription ("Triple shots, triple attack, casts various spells during attack, attacks have range of Inferno, no distance penalty, catapult");
+ 		//Monster's Power
+ 		giveArtBonus(143, Bonus::STACK_HEALTH, +100, -1, Bonus::PERCENT_TO_BASE);

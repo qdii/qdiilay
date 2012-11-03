@@ -33,6 +33,7 @@ RDEPEND="games-strategy/vcmi-data
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-boostiostream.patch
+	epatch "${FILESDIR}"/${P}-gcc-compatibility.patch
 	eautoreconf
 }
 
