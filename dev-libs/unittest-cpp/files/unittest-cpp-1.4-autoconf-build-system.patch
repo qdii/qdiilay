@@ -1,15 +1,15 @@
-From 43626de0b62be66bdb7222a6c2e9051db170d052 Mon Sep 17 00:00:00 2001
+From 9b9bc2cb2d2c8c75d724d282e03fe3b8cc54d0ba Mon Sep 17 00:00:00 2001
 From: qdii <victor.lavaud@gmail.com>
-Date: Wed, 14 Nov 2012 11:16:06 -0500
-Subject: [PATCH] Added autoconf build system
+Date: Wed, 14 Nov 2012 16:30:25 -0500
+Subject: [PATCH] Added autobuild system
 
 ---
- AUTHORS         |   6 +
+ AUTHORS         |   5 +
  INSTALL         | 370 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  Makefile        |  96 ---------------
  Makefile.am     |   1 +
  configure.ac    |  33 +++++
- src/Makefile.am |   8 ++
+ src/Makefile.am |   9 ++
  6 files changed, 418 insertions(+), 96 deletions(-)
  create mode 100644 AUTHORS
  create mode 100644 ChangeLog
@@ -20,26 +20,25 @@ Subject: [PATCH] Added autoconf build system
  create mode 100644 configure.ac
  create mode 100644 src/Makefile.am
 
-diff --git a/AUTHORS b/AUTHORS
+diff --git AUTHORS AUTHORS
 new file mode 100644
-index 0000000..06a5739
+index 0000000..1bebc1c
 --- /dev/null
-+++ b/AUTHORS
-@@ -0,0 +1,6 @@
-+UnitTest++ original authors are 
++++ AUTHORS
+@@ -0,0 +1,5 @@
 +  Noel Llopis (llopis@convexhull.com) 
 +  Charles Nicholson (charles.nicholson@gmail.com)
 +
 +But they have been unactive for years.
 +The maintainer of this fork is Victor Lavaud (victor.lavaud@gmail.com)
-diff --git a/ChangeLog b/ChangeLog
+diff --git ChangeLog ChangeLog
 new file mode 100644
 index 0000000..e69de29
-diff --git a/INSTALL b/INSTALL
+diff --git INSTALL INSTALL
 new file mode 100644
 index 0000000..6e90e07
 --- /dev/null
-+++ b/INSTALL
++++ INSTALL
 @@ -0,0 +1,370 @@
 +Installation Instructions
 +*************************
@@ -411,10 +410,10 @@ index 0000000..6e90e07
 +
 +`configure' also accepts some other, not widely useful, options.  Run
 +`configure --help' for more details.
-diff --git a/Makefile b/Makefile
+diff --git Makefile Makefile
 deleted file mode 100644
 index 4f2ea9d..0000000
---- a/Makefile
+--- Makefile
 +++ /dev/null
 @@ -1,96 +0,0 @@
 -CXX = g++
@@ -513,21 +512,21 @@ index 4f2ea9d..0000000
 --include $(dependencies)
 --include $(test_dependencies)
 -endif
-diff --git a/Makefile.am b/Makefile.am
+diff --git Makefile.am Makefile.am
 new file mode 100644
 index 0000000..af437a6
 --- /dev/null
-+++ b/Makefile.am
++++ Makefile.am
 @@ -0,0 +1 @@
 +SUBDIRS = src
-diff --git a/NEWS b/NEWS
+diff --git NEWS NEWS
 new file mode 100644
 index 0000000..e69de29
-diff --git a/configure.ac b/configure.ac
+diff --git configure.ac configure.ac
 new file mode 100644
-index 0000000..26aa0c3
+index 0000000..88ab84c
 --- /dev/null
-+++ b/configure.ac
++++ configure.ac
 @@ -0,0 +1,33 @@
 +#                                               -*- Autoconf -*-
 +# Process this file with autoconf to produce a configure script.
@@ -549,7 +548,7 @@ index 0000000..26aa0c3
 +# Checks for libraries.
 +
 +# Checks for header files.
-+AC_CHECK_HEADERS([sys/time.h unistd.h])
++AC_CHECK_HEADERS([sys/time.h unistd.h setjmp.h signal.h cassert cstddef cstdio cstring exception iosfwd iostream sstream string vector])
 +
 +# Checks for typedefs, structures, and compiler characteristics.
 +AC_CHECK_HEADER_STDBOOL
@@ -562,14 +561,15 @@ index 0000000..26aa0c3
 +AC_CONFIG_FILES([Makefile
 +		 src/Makefile])
 +AC_OUTPUT
-diff --git a/src/Makefile.am b/src/Makefile.am
+diff --git src/Makefile.am src/Makefile.am
 new file mode 100644
-index 0000000..5b42f6d
+index 0000000..c38712e
 --- /dev/null
-+++ b/src/Makefile.am
-@@ -0,0 +1,8 @@
++++ src/Makefile.am
+@@ -0,0 +1,9 @@
 +lib_LTLIBRARIES = libUnitTest++.la
-+include_HEADERS = UnitTest++.h
++pkgincludedir = $(includedir)/UnitTest++
++nobase_pkginclude_HEADERS = UnitTest++.h Config.h Test.h TestDetails.h TestList.h TestSuite.h TestResults.h TestMacros.h CheckMacros.h TestRunner.h TimeConstraint.h ExecuteTest.h AssertException.h MemoryOutStream.h CurrentTest.h Posix/SignalTranslator.h Checks.h TimeHelpers.h Posix/TimeHelpers.h
 +libUnitTest___la_SOURCES = AssertException.cpp Test.cpp Checks.cpp TestRunner.cpp TestResults.cpp TestReporter.cpp TestReporterStdout.cpp ReportAssert.cpp TestList.cpp TimeConstraint.cpp TestDetails.cpp MemoryOutStream.cpp DeferredTestReporter.cpp DeferredTestResult.cpp XmlTestReporter.cpp CurrentTest.cpp Posix/SignalTranslator.cpp Posix/TimeHelpers.cpp
 +libUnitTest___la_LDFLAGS = -version-number @LIBUNITTEST_SO_VERSION@
 +check_PROGRAMS = TestUnitTest++
