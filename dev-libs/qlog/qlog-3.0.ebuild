@@ -15,9 +15,22 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
 
-DEPEND=""
-RDEPEND=""
+DEPEND="test? ( dev-libs/unittest-cpp )"
+RDEPEND="${DEPEND}"
+DOCS="AUTHORS ChangeLog COPYING INSTALL NEWS README"
 
 src_prepare() {
 	eautoreconf
+}
+
+src_install() {
+	emake DESTDIR="${D}" install
+
+	# install regular doc files
+	for d in AUTHORS ChangeLog COPYING INSTALL NEWS README ; do
+	    [[ -s "${d}" ]] && dodoc "${d}"
+	done
+
+	# install html documentation
+	dodoc -r doc/html
 }
