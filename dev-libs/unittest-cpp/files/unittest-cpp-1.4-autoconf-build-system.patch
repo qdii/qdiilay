@@ -1,4 +1,4 @@
-From 333ce90b402a70b0e6482dc9e4655644ae73dda9 Mon Sep 17 00:00:00 2001
+From 43626de0b62be66bdb7222a6c2e9051db170d052 Mon Sep 17 00:00:00 2001
 From: qdii <victor.lavaud@gmail.com>
 Date: Wed, 14 Nov 2012 11:16:06 -0500
 Subject: [PATCH] Added autoconf build system
@@ -9,8 +9,8 @@ Subject: [PATCH] Added autoconf build system
  Makefile        |  96 ---------------
  Makefile.am     |   1 +
  configure.ac    |  33 +++++
- src/Makefile.am |   7 ++
- 6 files changed, 417 insertions(+), 96 deletions(-)
+ src/Makefile.am |   8 ++
+ 6 files changed, 418 insertions(+), 96 deletions(-)
  create mode 100644 AUTHORS
  create mode 100644 ChangeLog
  create mode 100644 INSTALL
@@ -564,11 +564,12 @@ index 0000000..26aa0c3
 +AC_OUTPUT
 diff --git a/src/Makefile.am b/src/Makefile.am
 new file mode 100644
-index 0000000..92b1ce1
+index 0000000..5b42f6d
 --- /dev/null
 +++ b/src/Makefile.am
-@@ -0,0 +1,7 @@
+@@ -0,0 +1,8 @@
 +lib_LTLIBRARIES = libUnitTest++.la
++include_HEADERS = UnitTest++.h
 +libUnitTest___la_SOURCES = AssertException.cpp Test.cpp Checks.cpp TestRunner.cpp TestResults.cpp TestReporter.cpp TestReporterStdout.cpp ReportAssert.cpp TestList.cpp TimeConstraint.cpp TestDetails.cpp MemoryOutStream.cpp DeferredTestReporter.cpp DeferredTestResult.cpp XmlTestReporter.cpp CurrentTest.cpp Posix/SignalTranslator.cpp Posix/TimeHelpers.cpp
 +libUnitTest___la_LDFLAGS = -version-number @LIBUNITTEST_SO_VERSION@
 +check_PROGRAMS = TestUnitTest++
