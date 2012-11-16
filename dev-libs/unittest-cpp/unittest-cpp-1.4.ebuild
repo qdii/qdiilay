@@ -18,6 +18,7 @@ IUSE=""
 
 DEPEND=""
 RDEPEND="${DEPEND}"
+DOCS="COPYING INSTALL README docs/UnitTest++.html"
 
 src_unpack()
 {

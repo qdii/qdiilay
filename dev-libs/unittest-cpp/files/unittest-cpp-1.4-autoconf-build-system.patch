@@ -1,4 +1,4 @@
-From 9b9bc2cb2d2c8c75d724d282e03fe3b8cc54d0ba Mon Sep 17 00:00:00 2001
+From 259cf50b213933262b621c6d62a01a15238d4934 Mon Sep 17 00:00:00 2001
 From: qdii <victor.lavaud@gmail.com>
 Date: Wed, 14 Nov 2012 16:30:25 -0500
 Subject: [PATCH] Added autobuild system
@@ -7,10 +7,10 @@ Subject: [PATCH] Added autobuild system
  AUTHORS         |   5 +
  INSTALL         | 370 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  Makefile        |  96 ---------------
- Makefile.am     |   1 +
+ Makefile.am     |   2 +
  configure.ac    |  33 +++++
  src/Makefile.am |   9 ++
- 6 files changed, 418 insertions(+), 96 deletions(-)
+ 6 files changed, 419 insertions(+), 96 deletions(-)
  create mode 100644 AUTHORS
  create mode 100644 ChangeLog
  create mode 100644 INSTALL
@@ -514,10 +514,11 @@ index 4f2ea9d..0000000
 -endif
 diff --git Makefile.am Makefile.am
 new file mode 100644
-index 0000000..af437a6
+index 0000000..1563f21
 --- /dev/null
 +++ Makefile.am
-@@ -0,0 +1 @@
+@@ -0,0 +1,2 @@
++EXTRA_DIST = docs
 +SUBDIRS = src
 diff --git NEWS NEWS
 new file mode 100644
