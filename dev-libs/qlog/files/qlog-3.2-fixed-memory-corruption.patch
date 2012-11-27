@@ -1,0 +1,82 @@
+From d63a3528aa7d206e6edddc4e20c091717d139c69 Mon Sep 17 00:00:00 2001
+From: Victor Lavaud <victor.lavaud@gmail.com>
+Date: Mon, 26 Nov 2012 18:38:46 -0600
+Subject: [PATCH] Increased warnings during compilation of unittests Fixed a
+ memory corruption
+
+---
+ Makefile.am   |  1 +
+ qlog.hpp      |  6 +++++-
+ unittests.cpp | 16 ++++++++++++++++
+ 3 files changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 32bf2d8..8764a6d 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -2,6 +2,7 @@ include_HEADERS = qlog.hpp
+ 
+ check_PROGRAMS = unittests
+ unittests_SOURCES = unittests.cpp
++unittests_CXXFLAGS = -Wall -Wextra -Weffc++ -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wundef -Wshadow -Wsuggest-attribute=pure -Wsuggest-attribute=const -Winvalid-pch -Wno-multichar
+ unittests_LDADD = -lUnitTest++
+ TESTS = unittests
+ 
+diff --git a/qlog.hpp b/qlog.hpp
+index ebd1bf6..27642ed 100644
+--- a/qlog.hpp
++++ b/qlog.hpp
+@@ -1084,6 +1084,10 @@ struct color
+ 
+         default: break;
+         }
++
++        QLOG_ASSERT(0 != m_foreground);
++        QLOG_ASSERT(0 != m_background);
++        QLOG_ASSERT(0 != m_bold);
+     }
+ 
+     const char * getBold() const { return m_bold; }
+@@ -1274,7 +1278,7 @@ struct color_decoration : public decoration
+     virtual ~color_decoration() throw() { }
+ 
+ private:
+-    const color & m_color;
++    color m_color;
+ };
+ 
+ // -------------------------------------------------------------------------- //
+diff --git a/unittests.cpp b/unittests.cpp
+index 22c1dc5..6bedee7 100644
+--- a/unittests.cpp
++++ b/unittests.cpp
+@@ -1,3 +1,4 @@
++#define QLOG_USE_ASSERTS
+ #include "qlog.hpp"
+ #include <UnitTest++/UnitTest++.h>
+ #include <iostream>
+@@ -614,6 +615,21 @@ TEST_FIXTURE( qlog_resetter, CustomFlavour )
+     qlog::error     << "A custom flavor error line\n";
+ }
+ 
++TEST_FIXTURE( qlog_resetter, ColorCopy )
++{
++    std::cout << "ColorCopy\n";
++    qlog::color vert(green);
++    qlog::color copy( vert );
++
++#ifndef WIN32
++    CHECK_EQUAL(vert.getBold(), copy.getBold());
++    CHECK_EQUAL(vert.getForeground(), copy.getForeground());
++    CHECK_EQUAL(vert.getBackground(), copy.getBackground());
++#else
++    CHECK_EQUAL(vert.getAttributes(), copy.getAttributes());
++#endif
++}
++
+ #ifndef WIN32
+ TEST_FIXTURE( qlog_resetter, ExceptionSafety )
+ {
+-- 
+1.8.0
+

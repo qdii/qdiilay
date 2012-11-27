@@ -4,7 +4,7 @@
 
 EAPI=4
 
-inherit autotools
+inherit autotools eutils
 
 DESCRIPTION="A header-only cross-platform logging library"
 HOMEPAGE="https://github.com/qdii/qlog"
@@ -20,6 +20,7 @@ RDEPEND="${DEPEND}"
 DOCS="AUTHORS ChangeLog COPYING INSTALL NEWS README"
 
 src_prepare() {
+	epatch "${FILESDIR}"/${P}-fixed-memory-corruption.patch
 	eautoreconf
 }
 
