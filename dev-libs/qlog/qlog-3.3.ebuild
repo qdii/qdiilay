@@ -20,7 +20,6 @@ RDEPEND="${DEPEND}"
 DOCS="AUTHORS ChangeLog COPYING INSTALL NEWS README"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${P}-fixed-memory-corruption.patch
 	eautoreconf
 }
 
