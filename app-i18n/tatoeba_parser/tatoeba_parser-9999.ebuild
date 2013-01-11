@@ -13,9 +13,10 @@ HOMEPAGE="https://github.com/qdii/tatoeba_parser"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="debug"
+IUSE="debug curl"
 
-DEPEND="dev-libs/boost[icu]"
+DEPEND="dev-libs/boost[icu]
+		curl? ( net-misc/curl )"
 RDEPEND="${DEPEND}"
 
 src_prepare() {
@@ -23,5 +24,5 @@ src_prepare() {
 }
 
 src_configure() {
-	econf $(use_enable debug) $(use_enable debug limit-mem)
+	econf $(use_enable debug) $(use_enable debug limit-mem) $(use_enable curl download)
 }
