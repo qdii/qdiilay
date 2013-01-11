@@ -16,4 +16,9 @@ KEYWORDS="~amd64"
 IUSE=""
 
 DEPEND=""
-RDEPEND="${DEPEND}"
+iRDEPEND="${DEPEND}"
+
+src_prepare()
+{
+    epatch "${FILESDIR}"/${P}-inline-cause-missing-symbols.patch
+}

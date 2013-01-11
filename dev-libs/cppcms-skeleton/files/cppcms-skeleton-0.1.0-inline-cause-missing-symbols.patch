@@ -1,0 +1,57 @@
+From 831002add29bc977bcebf261b9ec85e6b63232b1 Mon Sep 17 00:00:00 2001
+From: "Victor Lavaud (qdii)" <victor.lavaud@gmail.com>
+Date: Fri, 11 Jan 2013 22:12:48 +0100
+Subject: Removed inline as it caused missing symbols at link-time
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: allan.simon@supinfo.com
+
+Signed-off-by: Victor Lavaud (qdii) <victor.lavaud@gmail.com>
+---
+ cppcms_skel/controllers/webs/Controller.cpp | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/cppcms_skel/controllers/webs/Controller.cpp b/cppcms_skel/controllers/webs/Controller.cpp
+index 8118875..e9348fe 100644
+--- a/cppcms_skel/controllers/webs/Controller.cpp
++++ b/cppcms_skel/controllers/webs/Controller.cpp
+@@ -67,7 +67,7 @@ void Controller::init_content(contents::BaseContent& content) {
+ /**
+  *
+  */
+-inline const std::string Controller::get_message() {
++const std::string Controller::get_message() {
+     std::string message = "";
+     if (session().is_set("message")) {
+         message = session()["message"];
+@@ -79,7 +79,7 @@ inline const std::string Controller::get_message() {
+ /**
+  *
+  */
+-inline bool Controller::is_logged() {
++bool Controller::is_logged() {
+     return !get_current_username().empty();
+ }
+ 
+@@ -87,7 +87,7 @@ inline bool Controller::is_logged() {
+ /**
+  *
+  */
+-inline const std::string Controller::get_current_username() {
++const std::string Controller::get_current_username() {
+     return session()["username"];
+ }
+ 
+@@ -146,7 +146,7 @@ void Controller::go_to_main_page() {
+ /**
+  *
+  */
+-inline void Controller::redirect(
++void Controller::redirect(
+     const std::string &url
+ ) {
+     response().set_redirect_header(
+-- 
+1.8.1
+
