@@ -1,17 +1,33 @@
-From 831002add29bc977bcebf261b9ec85e6b63232b1 Mon Sep 17 00:00:00 2001
+From 458645227d60a7aad5fb76f2ef96e56781823821 Mon Sep 17 00:00:00 2001
 From: "Victor Lavaud (qdii)" <victor.lavaud@gmail.com>
 Date: Fri, 11 Jan 2013 22:12:48 +0100
-Subject: Removed inline as it caused missing symbols at link-time
+Subject: [PATCH] =?UTF-8?q?Removed=20=E2=80=9Cinline=E2=80=9D=20from=20all?=
+ =?UTF-8?q?=20cpp=20files=20as=20it=20caused=20missing=20symbols=20when=20?=
+ =?UTF-8?q?the=20function=20was=20inlined.?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To: allan.simon@supinfo.com
 
-Signed-off-by: Victor Lavaud (qdii) <victor.lavaud@gmail.com>
 ---
- cppcms_skel/controllers/webs/Controller.cpp | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ cppcms_skel/controllers/generics/Controller.cpp | 2 +-
+ cppcms_skel/controllers/webs/Controller.cpp     | 8 ++++----
+ cppcms_skel/controllers/webs/Controller.h       | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
+diff --git a/cppcms_skel/controllers/generics/Controller.cpp b/cppcms_skel/controllers/generics/Controller.cpp
+index 2cdc48a..16dbf2c 100644
+--- a/cppcms_skel/controllers/generics/Controller.cpp
++++ b/cppcms_skel/controllers/generics/Controller.cpp
+@@ -56,7 +56,7 @@ void Controller::init_content(contents::BaseContent& content) {
+ /**
+  *
+  */
+-inline bool Controller::is_logged() {
++bool Controller::is_logged() {
+     return !session()["name"].empty();
+ }
+ 
 diff --git a/cppcms_skel/controllers/webs/Controller.cpp b/cppcms_skel/controllers/webs/Controller.cpp
 index 8118875..e9348fe 100644
 --- a/cppcms_skel/controllers/webs/Controller.cpp
@@ -52,6 +68,19 @@ index 8118875..e9348fe 100644
      const std::string &url
  ) {
      response().set_redirect_header(
+diff --git a/cppcms_skel/controllers/webs/Controller.h b/cppcms_skel/controllers/webs/Controller.h
+index 636c72b..7093c90 100644
+--- a/cppcms_skel/controllers/webs/Controller.h
++++ b/cppcms_skel/controllers/webs/Controller.h
+@@ -188,7 +188,7 @@ class Controller : public controllers::generics::Controller {
+          * @param string url The URL on which the user will be redirected
+          * @since 12 November 2012
+          */
+-        inline void redirect(
++        void redirect(
+             const std::string &url
+         );
+                 
 -- 
 1.8.1
 
