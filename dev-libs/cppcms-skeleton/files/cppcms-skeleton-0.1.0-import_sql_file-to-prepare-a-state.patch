@@ -1,0 +1,26 @@
+From ec351bd82c54da89d0ec2cf3c4cc7a50ed0027db Mon Sep 17 00:00:00 2001
+From: "Victor Lavaud (qdii)" <victor.lavaud@gmail.com>
+Date: Sun, 13 Jan 2013 01:25:21 +0100
+Subject: [PATCH] Fix a bug causing import_sql_file to prepare a statement
+ twice
+To: allan.simon@supinfo.com
+
+---
+ cppcms_skel/models/SqliteModel.cpp | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/cppcms_skel/models/SqliteModel.cpp b/cppcms_skel/models/SqliteModel.cpp
+index 50f562e..fd03384 100644
+--- a/cppcms_skel/models/SqliteModel.cpp
++++ b/cppcms_skel/models/SqliteModel.cpp
+@@ -90,7 +90,6 @@ int SqliteModel::import_sql_file(
+             (std::istreambuf_iterator<char>(f)),
+             std::istreambuf_iterator<char>()
+         );
+-        sqliteDb << fileStr << cppdb::exec; 
+         size_t current = 0;
+         size_t next = fileStr.find_first_of( ";", current );
+         
+-- 
+1.8.1
+

@@ -21,4 +21,5 @@ iRDEPEND="${DEPEND}"
 src_prepare()
 {
     epatch "${FILESDIR}"/${P}-inline-cause-missing-symbols.patch
+	epatch "${FILESDIR}"/${P}-import_sql_file-to-prepare-a-state.patch
 }
