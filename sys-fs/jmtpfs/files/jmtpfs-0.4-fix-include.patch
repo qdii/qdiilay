@@ -1,0 +1,24 @@
+From fbaf690621b00bbee97115f37800b4f624e8eaec Mon Sep 17 00:00:00 2001
+From: kiorky <kiorky@cryptelium.net>
+Date: Mon, 19 Nov 2012 13:32:36 +0100
+Subject: [PATCH] fix include
+
+---
+ src/jmtpfs.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/jmtpfs.cpp b/src/jmtpfs.cpp
+index 2d2eed4..d38956d 100644
+--- a/src/jmtpfs.cpp
++++ b/src/jmtpfs.cpp
+@@ -32,6 +32,7 @@
+ #include <sstream>
+ #include <iomanip>
+ #include <assert.h>
++#include <unistd.h> 
+ 
+ #define JMTPFS_VERSION "0.4"
+ 
+-- 
+1.8.1.1
+
