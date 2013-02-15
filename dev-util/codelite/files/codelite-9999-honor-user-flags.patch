@@ -1,339 +1,39 @@
-From: qdii <qdii@reblochon.be>
-This patch addresses the problem of CXXFLAGS, CFLAGS and LDFLAGS not being honored by ./configure.
-
---- ./configure.orig	2012-10-29 11:18:57.730167499 -0400
-+++ ./configure	2012-10-29 11:26:53.891180249 -0400
-@@ -136,7 +136,7 @@
- 	if [ "$enable_debug" = "yes" ]; then
- 		objects_dir="Debug_gcc_unicode"${wx_suffix}
- 		configuration="Debug_gcc_unicode"
--		debug_flag=" -g "
-+		debug_flag=" "
- 		ext=ud
- 		optimization=" -DREGEXP_UNICODE "
-         asserts=""
-@@ -149,7 +149,7 @@
- 		configuration="Release_gcc_unicode"
- 		ext=u
- 		debug_flag=""
--		optimization=" -O3 -DREGEXP_UNICODE "
-+		optimization=" -DREGEXP_UNICODE "
-         # In release builds, unless otherwise instructed, tell wx to disable asserts
-         asserts="-DNDEBUG"
-         if [ "$asserts_specified" = "on" ]; then
-@@ -162,6 +162,9 @@
- 	echo "DEBUG=${debug_flag}" >> Makefile
- 	echo "WXASSERTS=${asserts}" >> Makefile
- 	echo "CXX=${compiler_name}" >> Makefile
-+	echo "CXXFLAGS=${CXXFLAGS}" >> Makefile
-+	echo "LDFLAGS=${LDFLAGS}" >> Makefile
-+	echo "CFLAGS=${CFLAGS}" >> Makefile
- 	echo "CMP=\$(CXX) ${compiler_extras} \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
- 	echo "CC=${c_compiler_name}" >> Makefile
- 	echo "GCC=\$(CC) ${c_compiler_extras}" >> Makefile
-@@ -339,9 +342,9 @@
- 	fi
+--- CMakeLists.txt.orig	2013-02-15 15:08:40.540319195 +0100
++++ CMakeLists.txt	2013-02-15 15:17:46.202333807 +0100
+@@ -97,6 +97,36 @@
+     endif(CMAKE_COMPILER_IS_GNUCXX)
+     add_definitions(-DNDEBUG)
  
- 	if [ "$enable_debug" = "yes" ]; then
--		debug_flag=" -g "
-+		debug_flag=" "
- 		configuration="Debug"
--		optimization=" -O0 "
-+		optimization=" "
-         asserts=""
-         if [ "$asserts_specified" = "off" ]; then
-             asserts="-DNDEBUG"
-@@ -349,7 +352,7 @@
- 	else
- 		configuration="Release"
- 		debug_flag=""
--		optimization=" -O2 "
-+		optimization=" "
-         # In release builds, unless otherwise instructed, tell wx to disable asserts
-         asserts="-DNDEBUG"
-         if [ "$asserts_specified" = "on" ]; then
-@@ -361,6 +364,9 @@
- 	echo "DEBUG=${debug_flag}" >> Makefile
- 	echo "WXASSERTS=${asserts}" >> Makefile
- 	echo "CXX=${compiler_name}" >> Makefile
-+	echo "CXXFLAGS=${CXXFLAGS}" >> Makefile
-+	echo "CFLAGS=${CFLAGS}" >> Makefile
-+	echo "LDFLAGS=${LDFLAGS}" >> Makefile
- 	echo "CMP=\$(CXX) ${cppchkcompiler_extras} \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
- 	echo "CC=${c_compiler_name}" >> Makefile
- 	echo "GCC=\$(CC) ${c_cppchkcompiler_extras} \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
-@@ -381,14 +387,14 @@
- 
- 		if [ "$file_extension" = "c" ]; then
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--			echo "	\$(GCC) -c ${a_file} -I.  -o ${configuration}/${a_file_no_ext}.o -Ilib" >> Makefile
-+			echo "	\$(GCC) \$(CFLAGS) -c ${a_file} -I.  -o ${configuration}/${a_file_no_ext}.o -Ilib" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--			echo "	\$(GCC) -I.  -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file} -Ilib" >> Makefile
-+			echo "	\$(GCC) \$(CFLAGS) -I.  -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file} -Ilib" >> Makefile
- 		else
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--			echo "	\$(CMP)  -c ${a_file} -I. -o ${configuration}/${a_file_no_ext}.o -Ilib" >> Makefile
-+			echo "	\$(CMP) \$(CXXFLAGS) -c ${a_file} -I. -o ${configuration}/${a_file_no_ext}.o -Ilib" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--			echo "	\$(CMP) -I. -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file} -Ilib" >> Makefile
-+			echo "	\$(CMP) \$(CXXFLAGS) -I. -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file} -Ilib" >> Makefile
- 		fi
- 
- 	done
-@@ -399,9 +405,9 @@
- 
- 	## On FreeBSD, -ldl is part og libc
- 	if [ "$os_name" = "FreeBSD" ]; then
--		echo "	\$(CMP) -o codelite_cppcheck \$(codelite_cppcheck_objects) -lpthread " >> Makefile
-+		echo "	\$(CMP) -o codelite_cppcheck \$(codelite_cppcheck_objects) -lpthread \$(LDFLAGS)" >> Makefile
- 	else
--		echo "	\$(CMP) -o codelite_cppcheck \$(codelite_cppcheck_objects) -lpthread -ldl " >> Makefile
-+		echo "	\$(CMP) -o codelite_cppcheck \$(codelite_cppcheck_objects) -lpthread -ldl \$(LDFLAGS)" >> Makefile
- 	fi
- 
- 	echo >> Makefile
-@@ -434,9 +440,9 @@
- 	rm -fr Makefile
- 
- 	if [ "$enable_debug" = "yes" ]; then
--		debug_flag=" -g "
-+		debug_flag=" "
- 		configuration="Debug"
--		optimization=" -O0 "
-+		optimization=" "
-         asserts=""
-         if [ "$asserts_specified" = "off" ]; then
-             asserts="-DNDEBUG"
-@@ -444,7 +450,7 @@
- 	else
- 		configuration="Release"
- 		debug_flag=""
--		optimization=" -O2 "
-+		optimization=" "
-         # In release builds, unless otherwise instructed, tell wx to disable asserts
-         asserts="-DNDEBUG"
-         if [ "$asserts_specified" = "on" ]; then
-@@ -456,6 +462,9 @@
- 	echo "DEBUG=${debug_flag}" >> Makefile
- 	echo "WXASSERTS=${asserts}" >> Makefile
- 	echo "CXX=${compiler_name}" >> Makefile
-+	echo "CXXFLAGS=${CXXFLAGS}" >> Makefile
-+	echo "CFLAGS=${CFLAGS}" >> Makefile
-+	echo "LDFLAGS=${LDFLAGS}" >> Makefile
- 	echo "CMP=\$(CXX) \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
- 	echo "CC=${c_compiler_name}" >> Makefile
- 	echo "GCC=\$(CC) \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
-@@ -474,9 +483,9 @@
- 		
- 		
- 		echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--		echo "	\$(CMP) ${lib_clang_cmp_flags} `${wx_config_tool} --cflags --unicode` -c ${a_file} -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+		echo "	\$(CMP) \$(CXXFLAGS) ${lib_clang_cmp_flags} `${wx_config_tool} --cflags --unicode` -c ${a_file} -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 		echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--		echo "	\$(CMP) ${lib_clang_cmp_flags} `${wx_config_tool} --cflags --unicode` -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
-+		echo "	\$(CMP) \$(CXXFLAGS) ${lib_clang_cmp_flags} `${wx_config_tool} --cflags --unicode` -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
- 	done
- 	
- 	echo "-include ${configuration}/*.d" >> Makefile
-@@ -487,9 +496,9 @@
- 	## On FreeBSD, -ldl is part og libc
- 	rpaths="-Wl,-rpath,\"$plugins_dir\""
- 	if [ "$os_name" = "FreeBSD" ]; then
--		echo "	\$(CMP) -o codelite-clang ${rpaths} \$(codelite_clang_objects) ${lib_clang_link_flags} -lpthread `${wx_config_tool} --libs --unicode`" >> Makefile
-+		echo "	\$(CMP) -o codelite-clang ${rpaths} \$(codelite_clang_objects) ${lib_clang_link_flags} -lpthread `${wx_config_tool} --libs --unicode` \$(LDFLAGS)" >> Makefile
- 	else
--		echo "	\$(CMP) -o codelite-clang ${rpaths} \$(codelite_clang_objects) ${lib_clang_link_flags} -lpthread -ldl `${wx_config_tool} --libs --unicode`" >> Makefile
-+		echo "	\$(CMP) -o codelite-clang ${rpaths} \$(codelite_clang_objects) ${lib_clang_link_flags} -lpthread -ldl `${wx_config_tool} --libs --unicode` \$(LDFLAGS)" >> Makefile
- 	fi
- 
- 	echo >> Makefile
-@@ -545,9 +554,9 @@
- 	fi
- 
- 	if [ "$enable_debug" = "yes" ]; then
--		debug_flag=" -g "
-+		debug_flag=" "
- 		configuration="Debug"
--		optimization=" -O0 "
-+		optimization=" "
-         asserts=""
-         if [ "$asserts_specified" = "off" ]; then
-             asserts="-DNDEBUG"
-@@ -555,7 +564,7 @@
- 	else
- 		configuration="Release"
- 		debug_flag=""
--		optimization=" -O2 "
-+		optimization=" "
-         # In release builds, unless otherwise instructed, tell wx to disable asserts
-         asserts="-DNDEBUG"
-         if [ "$asserts_specified" = "on" ]; then
-@@ -567,6 +576,9 @@
- 	echo "DEBUG=${debug_flag}" >> Makefile
- 	echo "WXASSERTS=${asserts}" >> Makefile
- 	echo "CXX=${compiler_name}" >> Makefile
-+	echo "CXXFLAGS=${CXXFLAGS}" >> Makefile
-+	echo "CFLAGS=${CFLAGS}" >> Makefile
-+	echo "LDFLAGS=${LDFLAGS}" >> Makefile
- 	echo "CMP=\$(CXX) ${codelitegcc_extras} \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
- 	echo "CC=${c_compiler_name}" >> Makefile
- 	echo "GCC=\$(CC) ${c_codelitegcc_extras} \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
-@@ -587,10 +599,10 @@
- 
- 		if [ "$file_extension" = "c" ]; then
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} >> Makefile
--			echo "	\$(GCC) -c ${a_file} -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+			echo "	\$(GCC) \$(CFLAGS) -c ${a_file} -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 		else
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} >> Makefile
--			echo "	\$(CMP) -c ${a_file} -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+			echo "	\$(CMP) \$(CXXFLAGS) -c ${a_file} -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 		fi
- 
- 	done
-@@ -600,9 +612,9 @@
- 
- 	## On FreeBSD, -ldl is part og libc
- 	if [ "$os_name" = "FreeBSD" ]; then
--		echo "	\$(CMP) -o codelitegcc \$(codelitegcc_objects) -lpthread" >> Makefile
-+		echo "	\$(CMP) -o codelitegcc \$(codelitegcc_objects) -lpthread \$(LDFLAGS)" >> Makefile
- 	else
--		echo "	\$(CMP) -o codelitegcc \$(codelitegcc_objects) -ldl -lpthread" >> Makefile
-+		echo "	\$(CMP) -o codelitegcc \$(codelitegcc_objects) -ldl -lpthread \$(LDFLAGS)" >> Makefile
- 	fi
- 
- 	echo >> Makefile
-@@ -658,9 +670,9 @@
- 	fi
- 
- 	if [ "$enable_debug" = "yes" ]; then
--		debug_flag=" -g "
-+		debug_flag=" "
- 		configuration="Debug"
--		optimization=" -O0 "
-+		optimization=" "
-         asserts=""
-         if [ "$asserts_specified" = "off" ]; then
-             asserts="-DNDEBUG"
-@@ -668,7 +680,7 @@
- 	else
- 		configuration="Release"
- 		debug_flag=""
--		optimization=" -O2 "
-+		optimization=" "
-         # In release builds, unless otherwise instructed, tell wx to disable asserts
-         asserts="-DNDEBUG"
-         if [ "$asserts_specified" = "on" ]; then
-@@ -680,6 +692,9 @@
- 	echo "DEBUG=${debug_flag}" >> Makefile
- 	echo "WXASSERTS=${asserts}" >> Makefile
- 	echo "CXX=${compiler_name}" >> Makefile
-+	echo "CXXFLAGS=${CXXFLAGS}" >> Makefile
-+	echo "CFLAGS=${CFLAGS}" >> Makefile
-+	echo "LDFLAGS=${LDFLAGS}" >> Makefile
- 	echo "CMP=\$(CXX) ${indexercompiler_extras} \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
- 	echo "CC=${c_compiler_name}" >> Makefile
- 	echo "GCC=\$(CC) ${c_indexercompiler_extras} \$(DEBUG) \$(OPT) \$(WXASSERTS) " >> Makefile
-@@ -700,14 +715,14 @@
- 
- 		if [ "$file_extension" = "c" ]; then
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--			echo "	\$(GCC) -c ${a_file} -DHAVE_CONFIG_H -I. -Ilibctags  -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+			echo "	\$(GCC) \$(CFLAGS) -c ${a_file} -DHAVE_CONFIG_H -I. -Ilibctags  -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--			echo "	\$(GCC) -DHAVE_CONFIG_H -I. -Ilibctags  -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
-+			echo "	\$(GCC) \$(CFLAGS) -DHAVE_CONFIG_H -I. -Ilibctags  -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
- 		else
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--			echo "	\$(CMP) `${wx_config_tool} --cflags --unicode` -c ${a_file} -DHAVE_CONFIG_H -I. -Ilibctags -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+			echo "	\$(CMP) \$(CXXFLAGS) `${wx_config_tool} --cflags --unicode` -c ${a_file} -DHAVE_CONFIG_H -I. -Ilibctags -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--			echo "	\$(CMP) `${wx_config_tool} --cflags --unicode` -DHAVE_CONFIG_H -I. -Ilibctags  -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
-+			echo "	\$(CMP) \$(CXXFLAGS) `${wx_config_tool} --cflags --unicode` -DHAVE_CONFIG_H -I. -Ilibctags  -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
- 		fi
- 
- 	done
-@@ -719,9 +734,9 @@
- 	## On FreeBSD, -ldl is part og libc
- 	rpaths="-Wl,-rpath,\"$plugins_dir\""
- 	if [ "$os_name" = "FreeBSD" ]; then
--		echo "	\$(CMP) -o codelite_indexer \$(codelite_indexer_objects) ${rpaths} -lpthread `${wx_config_tool} --libs --unicode`" >> Makefile
-+		echo "	\$(CMP) -o codelite_indexer \$(codelite_indexer_objects) ${rpaths} -lpthread `${wx_config_tool} --libs --unicode` \$(LDFLAGS)" >> Makefile
- 	else
--		echo "	\$(CMP) -o codelite_indexer \$(codelite_indexer_objects) ${rpaths} -lpthread -ldl `${wx_config_tool} --libs --unicode`" >> Makefile
-+		echo "	\$(CMP) -o codelite_indexer \$(codelite_indexer_objects) ${rpaths} -lpthread -ldl `${wx_config_tool} --libs --unicode` \$(LDFLAGS)" >> Makefile
- 	fi
- 
- 	echo >> Makefile
-@@ -806,18 +821,18 @@
- 
- 		if [ "$file_extension" = "c" ]; then
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--			echo "	\$(GCC) -c ${a_file} -fPIC \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+			echo "	\$(GCC) -c ${a_file} -fPIC \$(CFLAGS) \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--			echo "	\$(GCC) -fPIC \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
-+			echo "	\$(GCC) -fPIC \$(CFLAGS) \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.i:  >> Makefile
--			echo "	\$(GCC) -fPIC \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -E -o ${configuration}/${a_file_no_ext}.o.i ${a_file}" >> Makefile
-+			echo "	\$(GCC) -fPIC \$(CFLAGS) \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -E -o ${configuration}/${a_file_no_ext}.o.i ${a_file}" >> Makefile
- 		else
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--			echo "	\$(CMP) ${pch_flags} -c ${a_file} -fPIC \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+			echo "	\$(CMP) ${pch_flags} -c ${a_file} -fPIC \$(CXXFLAGS) \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--			echo "	\$(CMP) -fPIC \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
-+			echo "	\$(CMP) -fPIC \$(CXXFLAGS) \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.i:  >> Makefile
--			echo "	\$(CMP) -fPIC \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -E -o ${configuration}/${a_file_no_ext}.o.i ${a_file}" >> Makefile
-+			echo "	\$(CMP) -fPIC \$(CXXFLAGS) \$(CCFLAGS) ${additional_flags} \$(INCLUDES) -E -o ${configuration}/${a_file_no_ext}.o.i ${a_file}" >> Makefile
- 		fi
- 	done
- 	echo >> Makefile
-@@ -837,7 +852,7 @@
- 		echo "${rule_name}: ${pch_header} \$(${object_list_name})" >> Makefile
- 	fi
- 	
--	echo "	\$(CMP) -fPIC ${shared_obj_switch} -o ${base_dir}/\$(OUTPUT_DIR)/${libname}.so \$(${object_list_name}) \$(PLUGIN_LINK_FLAGS) ${additional_link_libs} -lutil" >> Makefile
-+	echo "	\$(CMP) -fPIC ${shared_obj_switch} -o ${base_dir}/\$(OUTPUT_DIR)/${libname}.so \$(${object_list_name}) \$(PLUGIN_LINK_FLAGS) ${additional_link_libs} -lutil \$(LDFLAGS)" >> Makefile
- 	if [ $dont_copy != "dont_copy" ]; then
- 		echo "	cp -f ${base_dir}/\$(OUTPUT_DIR)/${libname}.so ${runtime_path}/." >> Makefile
- 	fi
-@@ -874,28 +889,28 @@
- 
- 		if [ "$file_extension" = "c" ]; then
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--			echo "	\$(GCC) -c ${a_file} \$(CCFLAGS) \$(INCLUDES) -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+			echo "	\$(GCC) -c ${a_file} \$(CFLAGS) \$(CCFLAGS) \$(INCLUDES) -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--			echo "	\$(GCC) \$(CCFLAGS) \$(INCLUDES) -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
-+			echo "	\$(GCC) \$(CFLAGS) \$(CCFLAGS) \$(INCLUDES) -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.i:  >> Makefile
--			echo "	\$(GCC) \$(CCFLAGS) \$(INCLUDES) -E -o ${configuration}/${a_file_no_ext}.o.i ${a_file}" >> Makefile
-+			echo "	\$(GCC) \$(CFLAGS) \$(CCFLAGS) \$(INCLUDES) -E -o ${configuration}/${a_file_no_ext}.o.i ${a_file}" >> Makefile
- 		else
- 			echo ${configuration}/${a_file_no_ext}.o: ${a_file} ${configuration}/${a_file_no_ext}.o.d >> Makefile
--			echo "	\$(CMP) ${pch_flags} -c ${a_file} \$(CCFLAGS) \$(INCLUDES) -o ${configuration}/${a_file_no_ext}.o" >> Makefile
-+			echo "	\$(CMP) ${pch_flags} -c ${a_file} \$(CXXFLAGS) \$(CCFLAGS) \$(INCLUDES) -o ${configuration}/${a_file_no_ext}.o" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.d:  >> Makefile
--			echo "	\$(CMP) \$(CCFLAGS) \$(INCLUDES) -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
-+			echo "	\$(CMP) \$(CXXFLAGS) \$(CCFLAGS) \$(INCLUDES) -MT${configuration}/${a_file_no_ext}.o -MF${configuration}/${a_file_no_ext}.o.d  -MM ${a_file}" >> Makefile
- 			echo ${configuration}/${a_file_no_ext}.o.i:  >> Makefile
--			echo "	\$(CMP) \$(CCFLAGS) \$(INCLUDES) -E -o ${configuration}/${a_file_no_ext}.o.i ${a_file}" >> Makefile
-+			echo "	\$(CMP) \$(CXXFLAGS) \$(CCFLAGS) \$(INCLUDES) -E -o ${configuration}/${a_file_no_ext}.o.i ${a_file}" >> Makefile
- 		fi
- 	done
- 	echo >> Makefile
- 	
- 	echo "${rule_name}: \$(${object_list_name}) SDK" >> Makefile
- 	if [ "$os_name" = "Darwin" ]; then
--		echo "	\$(CMP) -o ${exename} \$(${object_list_name}) \$(LINK_FLAGS) -headerpad_max_install_names" >> Makefile
-+		echo "	\$(CMP) -o ${exename} \$(${object_list_name}) \$(LINK_FLAGS) -headerpad_max_install_names \$(LDFLAGS)">> Makefile
- 	
- 	else
--		echo "	\$(CMP) -o ${exename} \$(${object_list_name}) \$(LINK_FLAGS)" >> Makefile
-+		echo "	\$(CMP) -o ${exename} \$(${object_list_name}) \$(LINK_FLAGS) \$(LDFLAGS)" >> Makefile
- 	fi
- 	
- 	echo "	@echo ==========================================================" >> Makefile
++elseif (CMAKE_BUILD_TYPE MATCHES Gentoo_Release)
++    message("-- Building in Release mode")
++
++    ## Set the libraries outout directory
++    set( CL_BIN_DIR bin)
++    set( CL_LIB_DIR lib)
++ 
++    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CL_SRC_ROOT}/${CL_LIB_DIR}" )
++    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CL_SRC_ROOT}/${CL_BIN_DIR}" )
++    set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CL_SRC_ROOT}/${CL_LIB_DIR}" )
++    set( CL_LIBPATH "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
++
++    message("-- Executables will be written into ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
++    message("-- Shared Objects will be written into ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
++
++    add_definitions(-DNDEBUG)
++elseif (CMAKE_BUILD_TYPE MATCHES Gentoo_Debug)
++    message("-- Building in Debug mode")
++    ## Set the libraries outout directory
++    set( CL_BIN_DIR bin_debug)
++    set( CL_LIB_DIR lib_debug)
++
++    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CL_SRC_ROOT}/${CL_LIB_DIR}" )
++    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CL_SRC_ROOT}/${CL_BIN_DIR}" )
++    set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CL_SRC_ROOT}/${CL_LIB_DIR}" )
++    set( CL_LIBPATH                     "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
++	
++    message("-- Executables will be written into ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
++    message("-- Shared Objects will be written into ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
++
+ else ()
+     message("-- Building in Debug mode")
+     ## Set the libraries outout directory

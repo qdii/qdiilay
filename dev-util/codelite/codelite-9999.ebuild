@@ -5,43 +5,36 @@
 EAPI="2"
 
 WX_GTK_VER="2.9"
+MY_PN="${PN}git"
 
-inherit autotools eutils flag-o-matic subversion wxwidgets
+inherit cmake-utils wxwidgets git-2
 
 DESCRIPTION="powerful open-source, cross platform IDE for the C/C++"
 HOMEPAGE="http://www.codelite.org"
-ESVN_REPO_URI="http://codelite.svn.sourceforge.net/svnroot/${PN}/trunk"
+EGIT_REPO_URI="git://git.code.sf.net/p/${PN}/${MY_PN}"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=""
-IUSE="debug"
+IUSE="debug clang"
 
 DEPEND="x11-libs/wxGTK:${WX_GTK_VER}[X]
-	sys-devel/libtool:1.5"
-RDEPEND="${DEPEND}"
+	dev-vcs/git"
+RDEPEND="x11-libs/wxGTK:${WX_GTK_VER}[X]"
 
-src_prepare() {
-# Let's make the autorevision work.
-	subversion_wc_info
-	cur_rev=$(LC_ALL=C svn info "${ESVN_WC_PATH}" | grep Revision | awk '{print $2;}')
-	echo "#include <wx/string.h>" > LiteEditor/svninfo.cpp
-	printf "const wxChar * SvnRevision = wxT(\"%s\");\n" ${cur_rev} >> LiteEditor/svninfo.cpp
-	echo "" >> LiteEditor/svninfo.cpp
-	echo "Generating svninfo file..."
-
-# patch to honor CXXFLAGS, CFLAGS and LDFLAGS
+src_prepare()
+{
 	epatch "${FILESDIR}"/${P}-honor-user-flags.patch
 }
 
-src_configure() {
-	econf $(use_enable debug) $(use_enable debug assert)
-}
-
-src_compile() {
-	emake || die "emake failed"
-}
-
-src_install() {
-	emake DESTDIR="${D}" install || die "emake install failed"
+src_configure()
+{
+	sed "s@%%PREFIX%%@${PREFIX}@g" "${S}/Runtime/codelite.desktop.template" >> "${S}/Runtime/codelite.desktop"
+	if use debug ; then
+		CMAKE_BUILD_TYPE=Gentoo_Debug
+	else
+		CMAKE_BUILD_TYPE=Gentoo_Release
+	fi
+	cmake-utils_use_use clang CLANG
+	cmake-utils_src_configure
 }
