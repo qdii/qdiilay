@@ -36,13 +36,12 @@ src_prepare() {
 }
 
 src_configure() {
-	MY_DATADIR="${GAMES_DATADIR#/usr/}/${PN}"
-	#MY_GAMESLIBDIR=$(games_get_libdir)
-	#MY_LIBDIR=${MY_GAMESLIBDIR#/usr/}
-	#MY_BINDIR=${GAMES_BINDIR#/usr/}
-	MYCMAKEARGS="-DDATA_DIR=${MY_DATADIR}"
-	#MYCMAKEARGS+=" -DLIB_DIR=${MY_LIBDIR}"
-	#MYCMAKEARGS+=" -DBIN_DIR=${MY_BINDIR}"
+	local MY_DATADIR="${GAMES_DATADIR#/usr/}/${PN}"
+	local MY_GAMESLIBDIR=$(games_get_libdir)
+	local MY_LIBDIR=${MY_GAMESLIBDIR#/usr/}
+	local MY_BINDIR=${GAMES_BINDIR#/usr/}
+    local mycmakeargs=( -DDATA_DIR="${MY_DATADIR}" -DLIB_DIR="${MY_LIBDIR}"	-DBIN_DIR="${MY_BINDIR}" )
+
 	cmake-utils_src_configure
 }
 
