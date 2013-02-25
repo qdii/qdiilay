@@ -45,7 +45,14 @@ src_configure() {
 	cmake-utils_src_configure
 }
 
+src_install() {
+    cmake-utils_src_install
+    prepgamesdirs
+}
+
 pkg_postinst() {
+    games_pkg_postinst
+
 	elog For the game to work properly, please copy your 
 	elog \"Heroes Of Might and Magic: The Wake  Of Gods\" 
 	elog game directory into ${GAMES_DATADIR}/${PN} .
