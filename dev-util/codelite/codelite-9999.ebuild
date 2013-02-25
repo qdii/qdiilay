@@ -29,7 +29,6 @@ src_prepare()
 
 src_configure()
 {
-	sed "s@%%PREFIX%%@${PREFIX}@g" "${S}/Runtime/codelite.desktop.template" >> "${S}/Runtime/codelite.desktop"
 	if use debug ; then
 		CMAKE_BUILD_TYPE=Gentoo_Debug
 	else
