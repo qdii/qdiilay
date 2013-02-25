@@ -32,6 +32,7 @@ RDEPEND="games-strategy/vcmi-data
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-respect-user-data-path.patch
+	epatch "${FILESDIR}"/${P}-desktop-icon-version.patch
 }
 
 src_configure() {

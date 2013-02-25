@@ -1,0 +1,8 @@
+--- client/icons/vcmiclient.desktop.orig	2013-02-25 10:35:51.494747793 +0100
++++ client/icons/vcmiclient.desktop	2013-02-25 10:36:03.132748228 +0100
+@@ -6,4 +6,4 @@
+ Icon=vcmiclient
+ Exec=vcmiclient
+ Categories=Game;StrategyGame;
+-Version=0.91
++Version=1.0
