@@ -1,0 +1,21 @@
+--- CMakeLists.txt.orig	2013-02-24 23:54:23.995310423 +0100
++++ CMakeLists.txt	2013-02-25 00:09:15.924343733 +0100
+@@ -78,9 +78,15 @@
+ 	# includes lib path which determines where to install shared libraries (either /lib or /lib64)
+ 	include(GNUInstallDirs)
+ 
+-	set(BIN_DIR "bin" CACHE STRING "Where to install binaries")
+-	set(LIB_DIR "${CMAKE_INSTALL_LIBDIR}/vcmi" CACHE STRING "Where to install main library")
+-	set(DATA_DIR "share/vcmi" CACHE STRING "Where to install data files")
++	if (NOT BIN_DIR)
++		set(BIN_DIR "bin" CACHE STRING "Where to install binaries")
++	endif()
++	if (NOT LIB_DIR)
++		set(LIB_DIR "${CMAKE_INSTALL_LIBDIR}/vcmi" CACHE STRING "Where to install main library")
++	endif()
++	if (NOT DATA_DIR)
++		set(DATA_DIR "share/vcmi" CACHE STRING "Where to install data files")
++	endif()
+ endif()
+ 
+ set (AI_LIB_DIR "${LIB_DIR}/AI")
