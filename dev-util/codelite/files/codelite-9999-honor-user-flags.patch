@@ -1,9 +1,10 @@
---- CMakeLists.txt.orig	2013-02-15 15:08:40.540319195 +0100
-+++ CMakeLists.txt	2013-02-15 15:17:46.202333807 +0100
-@@ -97,6 +97,36 @@
-     endif(CMAKE_COMPILER_IS_GNUCXX)
-     add_definitions(-DNDEBUG)
- 
+--- CMakeLists.txt.orig	2013-05-12 23:59:08.351548839 +0200
++++ CMakeLists.txt	2013-05-13 00:01:53.159553252 +0200
+@@ -156,6 +156,37 @@
+     message("-- Adding -DNDEBUG to definitions")
+         add_definitions(-DNDEBUG)
+     endif()
++
 +elseif (CMAKE_BUILD_TYPE MATCHES Gentoo_Release)
 +    message("-- Building in Release mode")
 +
@@ -20,6 +21,7 @@
 +    message("-- Shared Objects will be written into ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 +
 +    add_definitions(-DNDEBUG)
++
 +elseif (CMAKE_BUILD_TYPE MATCHES Gentoo_Debug)
 +    message("-- Building in Debug mode")
 +    ## Set the libraries outout directory
@@ -30,10 +32,9 @@
 +    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CL_SRC_ROOT}/${CL_BIN_DIR}" )
 +    set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CL_SRC_ROOT}/${CL_LIB_DIR}" )
 +    set( CL_LIBPATH                     "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
-+	
++        
 +    message("-- Executables will be written into ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 +    message("-- Shared Objects will be written into ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-+
+     
  else ()
-     message("-- Building in Debug mode")
-     ## Set the libraries outout directory
+     message("-- Building in Release mode")
