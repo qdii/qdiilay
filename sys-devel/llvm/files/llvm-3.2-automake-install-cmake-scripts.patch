@@ -1,0 +1,81 @@
+From: Victor Lavaud (qdii) <victor.lavaud@gmail.com>
+This patches addresses the problem of cmake scripts not being installed by make install in llvm 3.2
+
+--- /dev/null	2013-06-12 20:25:53.913761672 +0200
++++ cmake/modules/Makefile	2013-06-12 19:19:37.325086264 +0200
+@@ -0,0 +1,30 @@
++##===- cmake/Makefile --------------------------------------*- Makefile -*-===##
++# 
++#                     The LLVM Compiler Infrastructure
++#
++# This file is distributed under the University of Illinois Open Source
++# License. See LICENSE.TXT for details.
++# 
++##===----------------------------------------------------------------------===##
++
++LEVEL      := ../..
++DIRS       :=
++
++include $(LEVEL)/Makefile.common
++
++CMAKE_FILES := LLVM-Config.cmake AddLLVM.cmake AddLLVMDefinitions.cmake ChooseMSVCCRT.cmake HandleLLVMOptions.cmake LLVMParseArguments.cmake LLVMProcessSources.cmake TableGen.cmake
++EXTRA_DIST := $(CMAKE_FILES)
++
++.PHONY: install-cmake 
++
++install_targets := install-cmake
++install-local:: $(install_targets)
++
++install-cmake:
++	$(Echo) Installing cmake modules 
++	$(Verb) $(MKDIR) $(DESTDIR)$(PROJ_cmakedir)/Modules
++	$(Verb) $(DataInstall) $(CMAKE_FILES) $(DESTDIR)$(PROJ_cmakedir)/Modules
++
++uninstall-local::
++	$(Echo) Uninstalling cmake modules
++	$(Verb) $(RM) -rf $(DESTDIR)$(PROJ_cmakedir)/Modules
+
+--- Makefile.orig	2013-06-12 19:25:37.820095918 +0200
++++ Makefile	2013-06-12 19:26:01.810096560 +0200
+@@ -15,7 +15,7 @@
+ #   3. Build VMCore, which builds the Intrinsics.inc file used by libs.
+ #   4. Build libs, which are needed by llvm-config.
+ #   5. Build llvm-config, which determines inter-lib dependencies for tools.
+-#   6. Build tools, runtime, docs.
++#   6. Build tools, runtime, cmake scripts, docs.
+ #
+ # When cross-compiling, there are some things (tablegen) that need to
+ # be build for the build system first.
+@@ -31,7 +31,7 @@
+   OPTIONAL_DIRS := tools/clang/utils/TableGen
+ else
+   DIRS := lib/Support lib/TableGen utils lib/VMCore lib tools/llvm-shlib \
+-          tools/llvm-config tools runtime docs unittests
++          tools/llvm-config tools runtime cmake/modules docs unittests
+   OPTIONAL_DIRS := projects bindings
+ endif
+ 
+--- Makefile.config.in.orig	2013-06-12 19:54:55.474142986 +0200
++++ Makefile.config.in	2013-06-12 19:56:46.841145969 +0200
+@@ -98,6 +98,7 @@
+ PROJ_libdir := $(PROJ_prefix)/lib64/llvm
+ PROJ_datadir    := $(PROJ_prefix)/share
+ PROJ_docsdir := $(PROJ_prefix)/share/doc/llvm-3.2
++PROJ_cmakedir := $(PROJ_prefix)/share/cmake
+ PROJ_etcdir := /etc/llvm
+ PROJ_includedir := $(PROJ_prefix)/include
+ PROJ_infodir    := $(PROJ_prefix)/info
+
+--- autoconf/configure.ac.orig	2013-06-13 18:27:18.291827752 +0200
++++ autoconf/configure.ac	2013-06-13 18:28:30.608829688 +0200
+@@ -1693,6 +1693,10 @@
+ dnl Configure the RPM spec file for LLVM
+ AC_CONFIG_FILES([llvm.spec])
+ 
++dnl Configure the cmake scripts
++AC_CONFIG_FILES([cmake/modules/LLVMConfig.cmake])
++AC_CONFIG_FILES([cmake/modules/LLVMConfigVersion.cmake])
++
+ dnl Configure doxygen's configuration file
+ AC_CONFIG_FILES([docs/doxygen.cfg])
+ 
